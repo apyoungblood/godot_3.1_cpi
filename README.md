@@ -4,7 +4,9 @@ An export template for Godot Engine v 3.1 stable built on ClockworkPi Gameshell
 
 Compiled on ClockworkPi Gameshell using the following command:
 
-`scons platform=x11 use_llvm=yes tools=no target=release bits=32 &`
+`scons platform=x11 -j6 use_llvm=yes tools=no target=release bits=32 &`
+
+I tried this on the GameShell without the use_llvm=yes parameter which as yes uses clang and without uses gcc, but the gcc compiler fails with errors. I added the -j6 parameter which is recommended by Godot which runs 6 jobs and they recommend cpu cores + 1 to 2, since the GameShell has 4, I tried 6.
 
 _\*This process took about 2 hours to run on device_
 

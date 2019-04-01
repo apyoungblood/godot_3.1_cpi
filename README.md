@@ -4,9 +4,21 @@ An export template for Godot Engine v 3.1 stable built on ClockworkPi Gameshell
 
 Compiled on ClockworkPi Gameshell using the following command:
 
-`scons platform=x11 use_llvm=yes tools=no target=release bits=32 &`
+`scons platform=x11 -j6 use_llvm=yes tools=no target=release bits=32 &`
+
+I tried this on the GameShell without the use_llvm=yes parameter which as yes uses clang and without uses gcc, but the gcc compiler fails with errors. I added the -j6 parameter which is recommended by Godot which runs 6 jobs and they recommend cpu cores + 1 to 2, since the GameShell has 4, I tried 6.
 
 _\*This process took about 2 hours to run on device_
+
+## Update from GameShell ClockworkOS v0.21
+
+For grins I tried going back to the ClockworkOS v0.21 from v0.3 (installed on my main SD card that shipped with my GameShell). I have an extra 8GB SD card with 0.21 for testing and such. This actually ran the game fine. This feels like more validation to me that the problem is with the Lima driver than anything else, though I thought I'd tried it with the driver switched to fbturbo in firmware 0.3. It's also important to acknowledge what I believe to be a separate issue with the sound driver in this case errors as "under-run" and on v0.3 firmware gives a "over-run" error with the ALSA sound driver.
+
+```
+cpi@clockworkpi:~/Platformer$ ./Platformer_2D.x86
+OpenGL ES 2.0 Renderer: Gallium 0.4 on llvmpipe (LLVM 3.9, 128 bits)
+ALSA lib pcm.c:8306:(snd_pcm_recover) underrun occurred
+```
 
 Running the exported project binaries with debugging gave the following errors along with distorted but playing sound and input that worked, but no visuals following the Godot Engine splash screen:
 

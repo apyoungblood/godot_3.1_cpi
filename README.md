@@ -1,6 +1,51 @@
 # godot_3.1_gameshell
 
-An export template for Godot Engine v 3.1 stable built on ClockworkPi Gameshell
+Export templates for Godot Engine v 3.1 stable built on ClockworkPi Gameshell firmware 0.21
+
+How to use these templates to export your Godot project to be a playable game on ClockworkPi Gameshell:
+1. Run Git Clone on the machine you are developing your game in Godot
+`git clone https://github.com/apyoungblood/godot_3.1_cpi.git`
+2. Unzip the export templates
+3. Install Clockworkpi GameShell Firmware 0.21 [Download ClockworkOS for GameShell version 0.21](https://forum.clockworkpi.com/t/gameshell-os-image-files/355) use [Etcher](https://www.balena.io/etcher/) to write the extracted firmware to your device's microSD card *This will wipe your device, so backup any files you want beforehand* 
+  > I like to use HPCodecraft's script for setting up my device after flashing a fresh firmware image on it to do so run `wget https://raw.githubusercontent.com/hpcodecraft/gameshell-setup/master/run.sh` then `./run.sh`
+4. Make your game in Godot Engine Version 3.1 stable, on any OS (Windows, Linux, MacOS)
+
+  > Considerations: Make sure to set the Project Settings > Display > Window to 320 width and 240 height, as that's the resolution of the GameShell and you'll get crashes/errors if you use anything else.
+  > It's always a good idea to give yourself a way to quit the game when you are done playing. In Godot we can add this script (assuming you've mapped ui_escape to the Escape key on the keyboard in Project Settings):
+  ```python
+  if Input.is_action_pressed("ui_escape")
+    get_tree().quit()
+  ```
+5. Godot project binaries can be built from any OS in Godot 3.1 stable using the following settings:
+![Godot Project Settings](https://sjc2.discourse-cdn.com/standard17/uploads/clockworkpi/optimized/2X/4/41475fa1c9c3f7b58979d16562e3ae854843ba1e_2_477x375.png)
+_Under Custom Template use the binaries I’ve built and posted to the github url below. Be sure 64 bits is NOT selected under Binary Format_
+6. Add the following line to the end of your GameShell's .bashrc file, which should be in /home/cpi/.bashrc `export DISPLAY=:0` then reboot your GameShell
+7. Copy the exported file from earlier (should be ProjectName.x86 in the Bin directory of you Godot Project Folder as well as the .pck file) to your GameShell in a directory where you want it.I suggest /home/cpi/games/ProjectName/ProjectName.x86
+8. Change to that directory and change the privlieges on those files:
+
+  `cd ~/games/ProjectName/`
+  
+  `chmod +x *`
+  
+9. Create a launcher entry:
+
+  `cd ~/launcher/Menu/GameShell`
+  
+  `vi 21_ProjectName.sh` This can be any name, and the number is not required, but must be different than anything already in this directory which you can see with the `ls` command, additionally you can use nano or your text editor of choice instead of vim
+  
+  Add the following to the file and save it:
+  
+  `#!/bin/bash`
+  
+  `exec /home/cpi/games/ProjectName/ProjectName.x86` _where ProjectName is whatever you've named your game_
+  
+  Finally, we need to make sure that this new script is executable:
+  
+  `chmod +x 21_ProjectName.sh`
+
+10. Reload the UI on your GameShell. That's it! Select your game and play!  
+
+## Process for creating export templates
 
 Compiled on ClockworkPi Gameshell using the following command:
 
@@ -10,184 +55,12 @@ I tried this on the GameShell without the use_llvm=yes parameter which as yes us
 
 _\*This process took about 2 hours to run on device_
 
-## Update from GameShell ClockworkOS v0.21
+## Known Issues
 
-For grins I tried going back to the ClockworkOS v0.21 from v0.3 (installed on my main SD card that shipped with my GameShell). I have an extra 8GB SD card with 0.21 for testing and such. This actually ran the game fine. This feels like more validation to me that the problem is with the Lima driver than anything else, though I thought I'd tried it with the driver switched to fbturbo in firmware 0.3. It's also important to acknowledge what I believe to be a separate issue with the sound driver in this case errors as "under-run" and on v0.3 firmware gives a "over-run" error with the ALSA sound driver.
+The sound driver logs to the terminal "under-run" errors with the ALSA sound driver.
 
 ```
 cpi@clockworkpi:~/Platformer$ ./Platformer_2D.x86
 OpenGL ES 2.0 Renderer: Gallium 0.4 on llvmpipe (LLVM 3.9, 128 bits)
-ALSA lib pcm.c:8306:(snd_pcm_recover) underrun occurred
-```
-
-Running the exported project binaries with debugging gave the following errors along with distorted but playing sound and input that worked, but no visuals following the Godot Engine splash screen:
-
-```
-cpi@clockworkpi:~/downloads/godot_3.1/platformer2d$ ./Platformer_2D.x86 --video-driver GLES2 --verbose
-XInput: Refreshing devices.
-XInput: No touch devices found.
-Detecting GPUs, set DRI_PRIME in the environment to override GPU detection logic.
-X Error of failed request:  GLXBadFBConfig
-  Major opcode of failed request:  155 (GLX)
-  Minor opcode of failed request:  34 ()
-  Serial number of failed request:  25
-  Current serial number in output stream:  22
-X Error of failed request:  GLXBadFBConfig
-  Major opcode of failed request:  155 (GLX)
-  Minor opcode of failed request:  34 ()
-  Serial number of failed request:  25
-  Current serial number in output stream:  22
-Only one GPU found, using default.
-XcursorGetTheme could not get cursor theme
-Using GLES2 video driver
-OpenGL ES 2.0 Renderer: Mali400
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_OPERATION in glTexImage2D(bad target for texture)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-ERROR: initialize: Directional shadow framebuffer status invalid
-   At: drivers/gles2/rasterizer_scene_gles2.cpp:3355.
-Audio buffer frames: 512 calculated latency: 11ms
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-error: lima_blit not implemented
-
-CORE API HASH: 0
-EDITOR API HASH: 0
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_FRAMEBUFFER_OPERATION in glClear(incomplete framebuffer)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-WARNING: _render_target_allocate: Could not create framebuffer!!
-   At: drivers/gles2/rasterizer_storage_gles2.cpp:4605.
-ERROR: _gl_debug_print: GL ERROR: Source: OpenGL        Type: Error     ID: 2   Severity: High  Message: GL_INVALID_FRAMEBUFFER_OPERATION in glClear(incomplete framebuffer)
-   At: drivers/gles2/rasterizer_gles2.cpp:134.
-Loading resource: res://Stage.tscn
-Loading resource: res://TileSet.tres
-Loading resource: res://tiles_demo.png
-Loading resource: res://coin/Coin.tscn
-Loading resource: res://coin/coin.gdc
-Loading resource: res://player/player.gdc
-Loading resource: res://player/Bullet.tscn
-Loading resource: res://player/bullet.gdc
-Loading resource: res://player/bullet.png
-Loading resource: res://coin/coin.png
-Loading resource: res://audio/sound_coin.wav
-Loading resource: res://platform/MovingPlatform.tscn
-Loading resource: res://platform/moving_platform.gdc
-Loading resource: res://platform/moving_platform.png
-Loading resource: res://platform/OneWayPlatform.tscn
-Loading resource: res://platform/one_way_platform.png
-Loading resource: res://player/Player.tscn
-Loading resource: res://player/robot_demo.png
-Loading resource: res://audio/sound_jump.wav
-Loading resource: res://audio/sound_shoot.wav
-Loading resource: res://player/osb_left.png
-Loading resource: res://player/osb_right.png
-Loading resource: res://player/osb_jump.png
-Loading resource: res://player/osb_fire.png
-Loading resource: res://enemy/Enemy.tscn
-Loading resource: res://enemy/enemy.gdc
-Loading resource: res://enemy/enemy.png
-Loading resource: res://audio/sound_hit.wav
-Loading resource: res://audio/sound_explode.wav
-Loading resource: res://background/ParallaxBg.tscn
-Loading resource: res://background/scroll_bg_sky.png
-Loading resource: res://background/scroll_bg_cloud_1.png
-Loading resource: res://background/scroll_bg_cloud_2.png
-Loading resource: res://background/scroll_bg_cloud_3.png
-Loading resource: res://background/scroll_bg_fg_2.png
-Loading resource: res://background/scroll_bg_fg_1.png
-Loading resource: res://audio/music.ogg
 ALSA lib pcm.c:8306:(snd_pcm_recover) underrun occurred
 ```

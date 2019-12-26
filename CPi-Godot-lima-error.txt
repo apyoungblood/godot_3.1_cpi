@@ -1,0 +1,61 @@
+cpi@clockworkpi:~/games/GraveyardShift$ ./GraveyardShift.x86 
+Godot Engine v3.1.2.stable.custom_build.0587df4 - https://godotengine.org
+X Error of failed request:  GLXBadFBConfig
+  Major opcode of failed request:  155 (GLX)
+  Minor opcode of failed request:  34 ()
+  Serial number of failed request:  25
+  Current serial number in output stream:  22
+X Error of failed request:  GLXBadFBConfig
+  Major opcode of failed request:  155 (GLX)
+  Minor opcode of failed request:  34 ()
+  Serial number of failed request:  25
+  Current serial number in output stream:  22
+OpenGL ES 2.0 Renderer: Mali400
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+ERROR: initialize: Directional shadow framebuffer status invalid
+   At: drivers/gles2/rasterizer_scene_gles2.cpp:3378.
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+error: lima_blit not implemented
+
+WARNING: _render_target_allocate: Could not create framebuffer!!
+   At: drivers/gles2/rasterizer_storage_gles2.cpp:4620.
+Mesa 18.3.0 implementation error: bad format MESA_FORMAT_NONE in _mesa_uncompressed_format_to_type_and_comps
+Please report at https://bugs.freedesktop.org/enter_bug.cgi?product=Mesa
+*** Error in `./GraveyardShift.x86': corrupted size vs. prev_size: 0x02803aa0 ***
+Aborted
